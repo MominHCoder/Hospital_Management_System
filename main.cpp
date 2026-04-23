@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstring>
+#include <string>
 #include <fstream>
 using namespace std;
 
@@ -11,7 +11,7 @@ private:
 
     int doctorID;
     string doctorName;
-    string doctorSpeciality;
+    string doctorSpecialty;
     int experience;
 
 public: //  constructor, it is called when an object of a class is created to initialize its data members
@@ -19,21 +19,21 @@ public: //  constructor, it is called when an object of a class is created to in
         doctorID = 0;
         experience = 0;
         doctorName = "";
-        doctorSpeciality = "";
+        doctorSpecialty = "";
     }
 
 // class getters
 
 int get_doctorID() {return doctorID;}
 string get_doctorName() {return doctorName;}
-string get_doctorSpeciality() {return doctorSpeciality;}
+string get_doctorSpecialty() {return doctorSpecialty;}
 int get_experience() {return experience;}
 
 // class setters
 
 void set_doctorID(int id) {doctorID = id;}
 void set_doctorName(string n) {doctorName = n;}
-void set_doctorSpeciality(string s) {doctorSpeciality = s;}
+void set_doctorSpecialty(string s) {doctorSpecialty = s;}
 void set_experience(int e) {experience = e;}
 
 };
@@ -73,19 +73,68 @@ public:
 };
 
 
+// function for loading doctors.txt (file is already clean)
+Doctor* loadDoctors(int &count) {
+    ifstream file("doctors.txt");
+    count = 0;
+
+    string line;
+    while(getline(file, line)){
+        if(!line.empty()){
+            count++;
+        } 
+    }
+
+    // memory alocation using pointers
+
+    Doctor* doctors = new Doctor[count];
+
+    file.clear();
+    file.seekg(0);
+
+    int i = 0;
+    while(getline(file, line)) {
+        if(line.empty()) {
+            continue;
+        }
+        int pos= 0;
+        string token;
+        string fields[4];
+        int fieldIndex = 0;
+
+        for(int j = 0; j<=line.length(); j++){
+            if(j == line.length() || line[j] == '#'){
+                fields[fieldIndex++] = line.substr(pos, j - pos);
+                pos = j + 1;
+            }
+        }
+
+        doctors[i].set_doctorID(stoi(fields[0]));
+        doctors[i].set_doctorName(fields[1]);
+        doctors[i].set_doctorSpecialty(fields[2]);
+        doctors[i].set_experience(stoi(fields[3]));
+        i++;
+    }
+
+    file.close();
+    return doctors;
+
+}
+
+
 // test case for checking of above classes will remove later
 
 int main() {
      Doctor d;
      d.set_doctorID(201);
      d.set_doctorName("Dr.Moin Akhtar");
-     d.set_doctorSpeciality("Neurosurgeon");
+     d.set_doctorSpecialty("Neurosurgeon");
      d.set_experience(10);
 
      cout<<"== Doctor Results =="<<endl;
      cout<<"ID: "<<d.get_doctorID()<<endl;
      cout<<"Name: "<<d.get_doctorName()<<endl;
-     cout<<"Speciality: "<<d.get_doctorSpeciality()<<endl;
+     cout<<"Speciality: "<<d.get_doctorSpecialty()<<endl;
      cout<<"Experience: "<<d.get_experience()<<" years "<<endl;
 
 
