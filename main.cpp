@@ -100,5 +100,7 @@ int main() {
      cout<<"Description: "<<t.get_description()<<endl;
      cout<<"Cost: "<<t.get_cost()<<endl;
      cout<<"Paid: "<<(t.isPaid() ? "Yes" : "No")<<endl;
+
+     // test cases ran succesfully for now 23-4-26 11:22PM
 }
 
