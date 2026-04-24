@@ -1,4 +1,59 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+using namespace std;
 
+// ============================================================
+//  HELPER FUNCTIONS
+// ============================================================
+
+int splitLine(string line, string parts[], int maxParts) {
+    int count = 0;
+    string token = "";
+    for (int i = 0; i < (int)line.length(); i++) {
+        if (line[i] == '#') {
+            if (count < maxParts) parts[count++] = token;
+            token = "";
+        } else {
+            token += line[i];
+        }
+    }
+    if (count < maxParts) parts[count++] = token;
+    return count;
+}
+
+string trim(string s) {
+    int start = 0, end = (int)s.length() - 1;
+    while (start <= end && s[start] == ' ') start++;
+    while (end >= start && s[end]   == ' ') end--;
+    if (start > end) return "";
+    return s.substr(start, end - start + 1);
+}
+
+// replaces stoi — works on all compilers including Dev-C++
+int toInt(string s) {
+    int val = 0;
+    stringstream ss(s);
+    ss >> val;
+    return val;
+}
+
+// replaces stod
+double toDouble(string s) {
+    double val = 0.0;
+    stringstream ss(s);
+    ss >> val;
+    return val;
+}
+
+int countLines(string filename) {
+    ifstream f(filename.c_str());
+    int count = 0;
+    string line;
+    while (getline(f, line))
+        if (!line.empty()) count++;
+    return count;
+}
 
 
 // ============================================================
@@ -154,3 +209,240 @@ public:
         cout << "------------------------\n";
     }
 };
+
+
+// ============================================================
+//  DOCTOR CLASS
+// ============================================================
+class Doctor {
+private:
+    int    doctorID;
+    string doctorName;
+    string doctorSpecialty;
+    int    experience;
+
+public:
+    Doctor() {
+        doctorID        = 0;
+        experience      = 0;
+        doctorName      = "";
+        doctorSpecialty = "";
+    }
+
+    int    get_doctorID()        const { return doctorID;        }
+    string get_doctorName()      const { return doctorName;      }
+    string get_doctorSpecialty() const { return doctorSpecialty; }
+    int    get_experience()      const { return experience;      }
+
+    void set_doctorID(int id)          { doctorID = id;       }
+    void set_doctorName(string n)      { doctorName = n;      }
+    void set_doctorSpecialty(string s) { doctorSpecialty = s; }
+    void set_experience(int e)         { experience = e;      }
+
+    void display() const {
+        cout << "Doctor ID  : " << doctorID        << "\n";
+        cout << "Name       : " << doctorName      << "\n";
+        cout << "Specialty  : " << doctorSpecialty << "\n";
+        cout << "Experience : " << experience      << " years\n";
+        cout << "------------------------\n";
+    }
+};
+
+
+// ============================================================
+//  TREATMENT CLASS
+// ============================================================
+class Treatment {
+private:
+    int    patientID;
+    string description;
+    double cost;
+    bool   paid;
+
+public:
+    Treatment() {
+        patientID   = 0;
+        cost        = 0.0;
+        paid        = false;
+        description = "";
+    }
+
+    int    get_patientID()   const { return patientID;   }
+    string get_description() const { return description; }
+    double get_cost()        const { return cost;        }
+    bool   isPaid()          const { return paid;        }
+
+    void set_patientID(int id)     { patientID = id;   }
+    void set_description(string d) { description = d;  }
+    void set_cost(double c)        { cost = c;         }
+    void set_paid(bool p)          { paid = p;         }
+
+    void display() const {
+        cout << "Patient ID  : " << patientID              << "\n";
+        cout << "Description : " << description            << "\n";
+        cout << "Cost        : " << cost                   << "\n";
+        cout << "Paid        : " << (paid ? "Yes" : "No")  << "\n";
+        cout << "------------------------\n";
+    }
+};
+
+
+// ============================================================
+//  LOAD PATIENTS
+// ============================================================
+Patient* loadPatients(int& total) {
+    total = countLines("patients.txt");
+    if (total == 0) { cout << "No patients found.\n"; return NULL; }
+
+    Patient* patients = new Patient[total];
+    ifstream file("patients.txt");
+    string line; int i = 0;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        string parts[10];
+        int count = splitLine(line, parts, 10);
+        if (count < 6) continue;
+
+        patients[i].setPatientId(toInt(trim(parts[0])));
+        patients[i].setName(trim(parts[1]));
+        patients[i].setAge(toInt(trim(parts[2])));
+        patients[i].setGender(trim(parts[3]));
+        patients[i].setContact(trim(parts[4]));
+        patients[i].setBalance(toDouble(trim(parts[5])));
+        i++;
+    }
+    file.close();
+    total = i;
+    cout << "Loaded " << total << " patients.\n";
+    return patients;
+}
+
+
+// ============================================================
+//  LOAD APPOINTMENTS
+// ============================================================
+Appointment* loadAppointments(int& total) {
+    total = countLines("appointments.txt");
+    if (total == 0) { cout << "No appointments found.\n"; return NULL; }
+
+    Appointment* appointments = new Appointment[total];
+    ifstream file("appointments.txt");
+    string line; int i = 0;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        string parts[10];
+        int count = splitLine(line, parts, 10);
+        if (count < 4) continue;
+
+        appointments[i].setPatientId(toInt(trim(parts[0])));
+        appointments[i].setDoctorId(toInt(trim(parts[1])));
+        appointments[i].setDate(trim(parts[2]));
+        appointments[i].setTime(trim(parts[3]));
+        i++;
+    }
+    file.close();
+    total = i;
+    cout << "Loaded " << total << " appointments.\n";
+    return appointments;
+}
+
+
+// ============================================================
+//  LOAD DOCTORS
+// ============================================================
+Doctor* loadDoctors(int& total) {
+    total = countLines("doctors.txt");
+    if (total == 0) { cout << "No doctors found.\n"; return NULL; }
+
+    Doctor* doctors = new Doctor[total];
+    ifstream file("doctors.txt");
+    string line; int i = 0;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        string parts[10];
+        int count = splitLine(line, parts, 10);
+        if (count < 4) continue;
+
+        doctors[i].set_doctorID(toInt(trim(parts[0])));
+        doctors[i].set_doctorName(trim(parts[1]));
+        doctors[i].set_doctorSpecialty(trim(parts[2]));
+        doctors[i].set_experience(toInt(trim(parts[3])));
+        i++;
+    }
+    file.close();
+    total = i;
+    cout << "Loaded " << total << " doctors.\n";
+    return doctors;
+}
+
+
+// ============================================================
+//  LOAD TREATMENTS
+// ============================================================
+Treatment* loadTreatments(int& total) {
+    total = countLines("treatments.txt");
+    if (total == 0) { cout << "No treatments found.\n"; return NULL; }
+
+    Treatment* treatments = new Treatment[total];
+    ifstream file("treatments.txt");
+    string line; int i = 0;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        string parts[10];
+        int count = splitLine(line, parts, 10);
+        if (count < 4) continue;
+
+        treatments[i].set_patientID(toInt(trim(parts[0])));
+        treatments[i].set_description(trim(parts[1]));
+        treatments[i].set_cost(toDouble(trim(parts[2])));
+        treatments[i].set_paid(trim(parts[3]) == "true");
+        i++;
+    }
+    file.close();
+    total = i;
+    cout << "Loaded " << total << " treatments.\n";
+    return treatments;
+}
+
+
+// ============================================================
+//  MAIN
+// ============================================================
+int main() {
+    int patientCount   = 0;
+    int appointCount   = 0;
+    int doctorCount    = 0;
+    int treatmentCount = 0;
+
+    Patient*     patients     = loadPatients(patientCount);
+    Appointment* appointments = loadAppointments(appointCount);
+    Doctor*      doctors      = loadDoctors(doctorCount);
+    Treatment*   treatments   = loadTreatments(treatmentCount);
+
+    cout << "\n===== PATIENTS =====\n";
+    for (int i = 0; i < 1; i++) //rep with 1 patientCount
+        patients[i].display();
+
+    cout << "\n===== APPOINTMENTS =====\n";
+    for (int i = 0; i < ; i++)//appointCount replaced with 1
+        appointments[i].display();
+
+    cout << "\n===== DOCTORS =====\n";
+    for (int i = 0; i < doctorCount; i++)
+        doctors[i].display();
+
+    cout << "\n===== TREATMENTS =====\n";
+    for (int i = 0; i < treatmentCount; i++)
+        treatments[i].display();
+
+    delete[] patients;
+    delete[] appointments;
+    delete[] doctors;
+    delete[] treatments;
+
+    return 0;
+}
