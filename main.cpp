@@ -141,6 +141,134 @@ public:
     }
 };
 
+// ============================================================
+//  CLEAN PATIENTS FILE
+// ============================================================
+void cleanPatientsFile() {
+    ifstream inFile("patients.txt");
+    if (!inFile) { cout << "patients.txt not found, skipping.\n"; return; }
+
+    string lines[1000]; int lineCount = 0; string line;
+    while (getline(inFile, line))
+        if (!trim(line).empty()) lines[lineCount++] = line;
+    inFile.close();
+
+    int seenIds[1000]; int seenCount = 0;
+    bool isDuplicate[1000] = {};
+    for (int i = 0; i < lineCount; i++) {
+        string parts[10]; splitLine(lines[i], parts, 10);
+        string id = trim(parts[0]);
+        if (!isAllDigits(id)) continue;
+        int pid = toInt(id);
+        bool found = false;
+        for (int j = 0; j < seenCount; j++) {
+            if (seenIds[j] == pid) {
+                found = true; isDuplicate[i] = true;
+                for (int k = 0; k < i; k++) {
+                    string p2[10]; splitLine(lines[k], p2, 10);
+                    string kid = trim(p2[0]);
+                    if (isAllDigits(kid) && toInt(kid) == pid)
+                        isDuplicate[k] = true;
+                }
+                break;
+            }
+        }
+        if (!found) seenIds[seenCount++] = pid;
+    }
+
+    ofstream outFile("patients.txt");
+    int saved = 0, removed = 0;
+    for (int i = 0; i < lineCount; i++) {
+        string parts[10]; int count = splitLine(lines[i], parts, 10);
+        string id      = trim(parts[0]);
+        string name    = (count > 1) ? trim(parts[1]) : "";
+        string age     = (count > 2) ? trim(parts[2]) : "";
+        string gender  = (count > 3) ? trim(parts[3]) : "";
+        string contact = (count > 4) ? trim(parts[4]) : "";
+        string balance = (count > 5) ? trim(parts[5]) : "0";
+
+        if (!isAllDigits(id))         { removed++; continue; }
+        if (name.empty())             { removed++; continue; }
+        if (!isAllDigits(age))        { removed++; continue; }
+        gender = fixGender(gender);
+        if (gender.empty())           { removed++; continue; }
+        if (!isValidContact(contact)) { removed++; continue; }
+        if (isDuplicate[i])           { removed++; continue; }
+        if (balance.empty()) balance = "0";
+
+        outFile << id << "#" << name << "#" << age << "#"
+                << gender << "#" << contact << "#" << balance << "\n";
+        saved++;
+    }
+    outFile.close();
+    cout << "patients.txt     -> " << saved << " kept, " << removed << " removed.\n";
+}
+
+
+
+
+
+// ============================================================
+//  CLEAN APPOINTMENTS FILE
+// ============================================================
+void cleanAppointmentsFile() {
+    ifstream inFile("appointments.txt");
+    if (!inFile) { cout << "appointments.txt not found, skipping.\n"; return; }
+
+    string lines[500]; int lineCount = 0; string line;
+    while (getline(inFile, line))
+        if (!trim(line).empty()) lines[lineCount++] = line;
+    inFile.close();
+
+    ofstream outFile("appointments.txt");
+    int saved = 0, removed = 0;
+    for (int i = 0; i < lineCount; i++) {
+        string parts[10]; int count = splitLine(lines[i], parts, 10);
+        if (count < 4)                       { removed++; continue; }
+        string patientId = trim(parts[0]);
+        string doctorId  = trim(parts[1]);
+        string date      = trim(parts[2]);
+        string time      = trim(parts[3]);
+
+        if (!isAllDigits(patientId)) { removed++; continue; }
+        if (!isAllDigits(doctorId))  { removed++; continue; }
+        if (date.empty())            { removed++; continue; }
+        if (time.empty())            { removed++; continue; }
+
+        date = fixDate(date);
+        time = fixTime(time);
+
+        outFile << patientId << "#" << doctorId << "#" << date << "#" << time << "\n";
+        saved++;
+    }
+    outFile.close();
+    cout << "appointments.txt -> " << saved << " kept, " << removed << " removed.\n";
+}
+
+
+// ============================================================
+//  MASTER cleanFile()
+// ============================================================
+void cleanFile() {
+    cout << "\n========== Running file clean ==========\n";
+    cleanPatientsFile();
+    cleanAppointmentsFile();
+    cout << "========================================\n\n";
+}
+
+
+// ============================================================
+//  COUNT LINES IN FILE (for dynamic array sizing)
+// ============================================================
+int countLines(string filename) {
+    ifstream f(filename.c_str());
+    int count = 0;
+    string line;
+    while (getline(f, line))
+        if (!trim(line).empty()) count++;
+    return count;
+}
+
 
 // ============================================================
 //  APPOINTMENT CLASS
