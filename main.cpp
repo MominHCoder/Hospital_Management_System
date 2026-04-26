@@ -1,7 +1,98 @@
-#include <iostream>
+include <iostream>
 #include <string>
 #include <fstream>
 using namespace std;
+
+
+
+// Helper Functions by Huzaifa and Momin
+
+// Splits a line by '#' delimiter and stores each part in the parts[] array
+// Returns the number of parts found
+// Example: "101#Ali Raza#25#Male" → parts[0]="101", parts[1]="Ali Raza", etc.
+int splitLine(string line, string parts[], int maxParts) {
+    int count = 0;      
+    string current = ""; 
+
+    for (int i = 0; i < (int)line.length(); i++) {
+        
+        if (line[i] == '#') {
+            
+            if (count < maxParts) {
+                parts[count] = current;
+                count++;
+            }
+            current = ""; // reset for next part
+        } 
+        else {
+            
+            current += line[i];
+        }
+    }
+
+    if (count < maxParts && !current.empty()) {
+        parts[count] = current;
+        count++;
+    }
+
+    return count;
+}
+
+
+string trim(string s) {
+    int start = 0, end = (int)s.length() - 1;
+    while (start <= end && s[start] == ' ') start++;
+    while (end >= start && s[end] == ' ') end--;
+    if (start > end) return "";
+    return s.substr(start, end - start + 1);
+}
+
+// toInt() and toDouble() written by Huzaifa Modified by Momin
+
+int toInt(string s) {
+    if (s.empty()) return 0;
+    int result = 0;
+    for (int i = 0; i < s.length(); i++) {
+        if (!isdigit(s[i])) return 0;
+        result = result * 10 + (s[i] - '0');
+    }
+    return result;
+}
+
+double toDouble(string s) {
+    if (s.empty()) return 0.0;
+    double result = 0.0;
+    double decimal = 0.1;
+    bool afterDot = false;
+
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] == '.') {
+            afterDot = true;
+        } 
+        else if (isdigit(s[i])) {
+            if (!afterDot) {
+                result = result * 10 + (s[i] - '0');
+            } else {
+                result = result + (s[i] - '0') * decimal;
+                decimal = decimal * 0.1;
+            }
+        } 
+        else {
+            return 0.0;
+        }
+    }
+    return result;
+}
+
+int countLines(string filename) {
+    ifstream f(filename.c_str());
+    int count = 0;
+    string line;
+    while (getline(f, line))
+        if (!line.empty()) count++;
+    return count;
+}
+
 
 
 // Doctor and Treatment Class by Momin
@@ -24,10 +115,18 @@ public: //  constructor, it is called when an object of a class is created to in
 
 // class getters
 
-int get_doctorID() {return doctorID;}
-string get_doctorName() {return doctorName;}
-string get_doctorSpecialty() {return doctorSpecialty;}
-int get_experience() {return experience;}
+int get_doctorID() {
+    return doctorID;
+}
+string get_doctorName() {
+    return doctorName;
+}
+string get_doctorSpecialty() {
+    return doctorSpecialty;
+}
+int get_experience() {
+    return experience;
+}
 
 // class setters
 
@@ -55,10 +154,18 @@ public:
 
     // getter of the class
 
-    int get_patientID() {return patientID;}
-    string get_description() {return description;}
-    double get_cost() {return cost;}
-    bool isPaid() {return paid;}
+    int get_patientID() {
+        return patientID;
+    }
+    string get_description() {
+        return description;
+    }
+    double get_cost() {
+        return cost;
+    }
+    bool isPaid() {
+        return paid;
+    }
 
 
     // setter of the class
@@ -71,6 +178,151 @@ public:
 
 
 };
+
+
+//  Patient and Appointment Classes by Huzaifa
+// ============================================================
+
+class Patient {
+private:
+    int patientId;
+    string name;
+    int age;
+    string gender;
+    string contact;
+    double balance;
+public:
+    Patient() {
+        patientId = 0;
+        name      = "";
+        age       = 0;
+        gender    = "";
+        contact   = "";
+        balance   = 0.0;
+    }
+    Patient(int id, string n, int a, string g, string c, double b) {
+        setPatientId(id);
+        setName(n);
+        setAge(a);
+        setGender(g);
+        setContact(c);
+        setBalance(b);
+    }
+    
+    void setPatientId(int id) {
+        if (id > 0) patientId = id;
+        else cout << "Invalid Patient ID\n";
+    }
+    void setName(string n) {
+        if (!n.empty()) name = n;
+        else cout << "Name cannot be empty\n";
+    }
+    void setAge(int a) {
+        if (a > 0 && a < 120) age = a;
+        else cout << "Invalid Age\n";
+    }
+    void setGender(string g) {
+        if (g == "Male" || g == "Female") gender = g;
+        else cout << "Invalid Gender (use Male or Female)\n";
+    }
+    void setContact(string c) {
+        if (c.length() == 11) {
+            for (int i = 0; i < (int)c.length(); i++) {
+                if (!isdigit(c[i])) {
+                    cout << "Contact must contain digits only\n";
+                    return;
+                }
+            }
+            contact = c;
+        } else {
+            cout << "Invalid Contact Number (must be 11 digits)\n";
+        }
+    }
+    void setBalance(double b) {
+        if (b >= 0) balance = b;
+        else cout << "Balance cannot be negative\n";
+    }
+    int    getPatientId() const { return patientId; }
+    string getName()      const { return name;      }
+    int    getAge()       const { return age;        }
+    string getGender()    const { return gender;     }
+    string getContact()   const { return contact;    }
+    double getBalance()   const { return balance;    }
+    void display() const {
+        cout << "Patient ID : " << patientId << "\n";
+        cout << "Name       : " << name      << "\n";
+        cout << "Age        : " << age       << "\n";
+        cout << "Gender     : " << gender    << "\n";
+        cout << "Contact    : " << contact   << "\n";
+        cout << "Balance    : " << balance   << "\n";
+        cout << "------------------------\n";
+    }
+};
+
+class Appointment {
+private:
+    int  patientId;
+    int  doctorId;
+    char date[12];
+    char time[12];
+public:
+    Appointment() {
+        patientId = 0;
+        doctorId  = 0;
+        date[0]   = '\0';
+        time[0]   = '\0';
+    }
+    Appointment(int pid, int did, string d, string t) {
+        setPatientId(pid);
+        setDoctorId(did);
+        setDate(d);
+        setTime(t);
+    }
+    
+    void setPatientId(int id) {
+        if (id > 0) patientId = id;
+        else cout << "Invalid Patient ID\n";
+    }
+    void setDoctorId(int id) {
+        if (id > 0) doctorId = id;
+        else cout << "Invalid Doctor ID\n";
+    }
+    void setDate(string d) {
+        if (d.length() > 0 && d.length() <= 11) {
+            for (int i = 0; i < (int)d.length(); i++)
+                date[i] = d[i];
+            date[d.length()] = '\0';
+        } else {
+            cout << "Invalid Date\n";
+        }
+    }
+    void setTime(string t) {
+        if (t.length() > 0 && t.length() <= 11) {
+            for (int i = 0; i < (int)t.length(); i++)
+                time[i] = t[i];
+            time[t.length()] = '\0';
+        } else {
+            cout << "Invalid Time\n";
+        }
+    }
+    int    getPatientId() const { return patientId;    }
+    int    getDoctorId()  const { return doctorId;     }
+    string getDate()      const { return string(date); }
+    string getTime()      const { return string(time); }
+    void display() const {
+        cout << "Patient ID : " << patientId << "\n";
+        cout << "Doctor ID  : " << doctorId  << "\n";
+        cout << "Date       : " << date      << "\n";
+        cout << "Time       : " << time      << "\n";
+        cout << "------------------------\n";
+    }
+};
+
+
+
+// LOAD FUNCTIONS (Loading of files)
+// loadDoctors() and loadTreatments() written by Momin
+// loadPatients() and loadAppointments() written by Huzaifa
 
 
 // function for loading doctors.txt (file is already clean)
@@ -121,35 +373,51 @@ Doctor* loadDoctors(int &count) {
 
 }
 
+Patient* loadPatients(int& total) {
+    total = countLines("patients.txt");
+    if (total == 0) { cout << "No patients found.\n"; return NULL; }
 
-// test case for checking of above classes will remove later
+    Patient* patients = new Patient[total];
+    ifstream file("patients.txt");
+    string line; int i = 0;
 
-int main() {
-     Doctor d;
-     d.set_doctorID(201);
-     d.set_doctorName("Dr.Moin Akhtar");
-     d.set_doctorSpecialty("Neurosurgeon");
-     d.set_experience(10);
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        string parts[10];
+        int count = splitLine(line, parts, 10);
+        if (count < 6) continue;
 
-     cout<<"== Doctor Results =="<<endl;
-     cout<<"ID: "<<d.get_doctorID()<<endl;
-     cout<<"Name: "<<d.get_doctorName()<<endl;
-     cout<<"Speciality: "<<d.get_doctorSpecialty()<<endl;
-     cout<<"Experience: "<<d.get_experience()<<" years "<<endl;
-
-
-     Treatment t;
-     t.set_patientID(101);
-     t.set_description("Aneurysm Checkup");
-     t.set_cost(1000);
-     t.set_paid(true);
-
-     cout<<"== Treatment Results =="<<endl;
-     cout<<"ID: "<<t.get_patientID()<<endl;
-     cout<<"Description: "<<t.get_description()<<endl;
-     cout<<"Cost: "<<t.get_cost()<<endl;
-     cout<<"Paid: "<<(t.isPaid() ? "Yes" : "No")<<endl;
-
-     // test cases ran succesfully for now 23-4-26 11:22PM
+        patients[i].setPatientId(toInt(trim(parts[0])));
+        patients[i].setName(trim(parts[1]));
+        patients[i].setAge(toInt(trim(parts[2])));
+        patients[i].setGender(trim(parts[3]));
+        patients[i].setContact(trim(parts[4]));
+        patients[i].setBalance(toDouble(trim(parts[5])));
+        i++;
+    }
+    file.close();
+    total = i;
+    cout << "Loaded " << total << " patients.\n";
+    return patients;
 }
 
+Appointment* loadAppointments(int& total) {
+    total = countLines("appointments.txt");
+    if (total == 0) { cout << "No appointments found.\n"; return NULL; }
+
+    Appointment* appointments = new Appointment[total];
+    ifstream file("appointments.txt");
+    string line; int i = 0;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        string parts[10];
+        int count = splitLine(line, parts, 10);
+        if (count < 4) continue;
+
+        appointments[i].setPatientId(toInt(trim(parts[0])));
+        appointments[i].setDoctorId(toInt(trim(parts[1])));
+        appointments[i].setDate(trim(parts[2]));
+        appointments[i].setTime(trim(parts[3]));
+        i++;
+    }
