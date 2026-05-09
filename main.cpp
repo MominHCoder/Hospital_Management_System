@@ -6,7 +6,22 @@ using namespace std;
 
 
 // Helper Functions by Huzaifa and Momin
+ momin/doctor-treatment
+bool isNumber(string s){
+    if(s.empty()){
+        return false;
+    }
 
+    for(int i = 0; i<s.length();i++){
+        if(!isdigit(s[i])){
+            return false;
+        }
+    }
+    return true;
+}
+
+
+ main
 // Splits a line by '#' delimiter and stores each part in the parts[] array
 // Returns the number of parts found
 // Example: "101#Ali Raza#25#Male" → parts[0]="101", parts[1]="Ali Raza", etc.
@@ -130,10 +145,18 @@ int get_experience() {
 
 // class setters
 
-void set_doctorID(int id) {doctorID = id;}
-void set_doctorName(string n) {doctorName = n;}
-void set_doctorSpecialty(string s) {doctorSpecialty = s;}
-void set_experience(int e) {experience = e;}
+void set_doctorID(int id) {
+    doctorID = id;
+}
+void set_doctorName(string n) {
+    doctorName = n;
+}
+void set_doctorSpecialty(string s) {
+    doctorSpecialty = s;
+}
+void set_experience(int e) {
+    experience = e;
+}
 
 };
 
@@ -242,6 +265,34 @@ public:
         if (b >= 0) balance = b;
         else cout << "Balance cannot be negative\n";
     }
+ momin/doctor-treatment
+    int    getPatientId() const { 
+        return patientId;
+    }
+    string getName() const { 
+        return name;      
+    }
+    int    getAge() const { 
+        return age;        
+    }
+    string getGender() const { 
+        return gender;     
+    }
+    string getContact() const { 
+        return contact;    
+    }
+    double getBalance() const { 
+        return balance;    
+    }
+    void display() const {
+        cout << "Patient ID: " << patientId << endl;
+        cout << "Name: " << name << endl;
+        cout << "Age: " << age << endl;
+        cout << "Gender: " << gender << endl;
+        cout << "Contact: " << contact << endl;
+        cout << "Balance: " << balance << endl;
+        cout << "------------------------"<<endl;
+
     int    getPatientId() const { return patientId; }
     string getName()      const { return name;      }
     int    getAge()       const { return age;        }
@@ -256,6 +307,7 @@ public:
         cout << "Contact    : " << contact   << "\n";
         cout << "Balance    : " << balance   << "\n";
         cout << "------------------------\n";
+ main
     }
 };
 
@@ -281,11 +333,19 @@ public:
     
     void setPatientId(int id) {
         if (id > 0) patientId = id;
+ momin/doctor-treatment
+        else cout << "Invalid Patient ID"<<endl;
+    }
+    void setDoctorId(int id) {
+        if (id > 0) doctorId = id;
+        else cout << "Invalid Doctor ID"<<endl;
+
         else cout << "Invalid Patient ID\n";
     }
     void setDoctorId(int id) {
         if (id > 0) doctorId = id;
         else cout << "Invalid Doctor ID\n";
+ main
     }
     void setDate(string d) {
         if (d.length() > 0 && d.length() <= 11) {
@@ -293,7 +353,11 @@ public:
                 date[i] = d[i];
             date[d.length()] = '\0';
         } else {
+ momin/doctor-treatment
+            cout << "Invalid Date"<<endl;
+
             cout << "Invalid Date\n";
+ main
         }
     }
     void setTime(string t) {
@@ -302,6 +366,181 @@ public:
                 time[i] = t[i];
             time[t.length()] = '\0';
         } else {
+ momin/doctor-treatment
+            cout << "Invalid Time"<<endl;
+        }
+    }
+    int    getPatientId()const { 
+        return patientId;    
+    }
+    int    getDoctorId() const { 
+        return doctorId;     
+    }
+    string getDate() const { 
+        return string(date); 
+    }
+    string getTime() const { 
+        return string(time); 
+    }
+    void display() const {
+        cout << "Patient ID: " << patientId << endl;
+        cout << "Doctor ID: " << doctorId  << endl;
+        cout << "Date: " << date << endl;
+        cout << "Time: " << time << endl;
+        cout << "------------------------"<<endl;
+    }
+};
+
+// Clean Up Functions
+
+// cleanDoctorsFile() by Momin
+
+
+void cleanDoctorsFile() {
+    ifstream inFile("doctors.txt");
+    ofstream tempFile("doctors_temp.txt");
+
+    string line;
+    int removed = 0; // for the remove count
+
+    while(getline(inFile, line)){
+        if(line.empty()){
+            continue;
+        }
+
+        string fields[4];
+        int count = splitLine(line, fields, 4);
+
+        for(int i = 0; i<count; i++){
+            fields[i] = trim(fields[i]);
+        }
+
+        // checking for the existence of all 4 fields
+        if(count < 4){
+            cout<<"Removed! incomplete Doctor Record: "<<line<<endl;
+            removed++;
+            continue;
+        }
+
+        // individual checks for each field
+
+        if(!isNumber(fields[0])){
+            cout<<"Removed the invalid Doctor Id";
+            removed++;
+            continue;
+        }
+
+        if (fields[1].empty()){
+            cout<<"Removed the missing speciality";
+            removed++;
+            continue;
+        }
+
+        if(!isNumber(fields[2])){
+            cout<<"Removed the invalid experience";
+            removed++;
+            continue;
+        }
+
+        tempFile << line << endl;
+
+    }
+
+    inFile.close();
+    tempFile.close();
+
+    remove("doctors.txt");
+    rename("doctors_temp.txt", "doctors.txt");
+
+    cout<<"Doctors file cleaned. Records removed"<<removed<<endl;
+}
+
+void cleanTreatmentsFile() {
+    ifstream inFile("data/treatments.txt");
+    ofstream tempFile("data/treatments_temp.txt");
+
+    string line;
+    int removed = 0;
+
+    while (getline(inFile, line)) {
+        if (line.empty()){
+            continue;
+        }
+        
+        string fields[4];
+        int count = splitLine(line, fields, 4);
+
+        
+        for (int i = 0; i < count; i++) {
+            fields[i] = trim(fields[i]);
+        }
+
+        // Check all 4 fields exist
+        if (count < 4) {
+            cout << "Removed incomplete treatment: " << line << endl;
+            removed++;
+            continue;
+        }
+
+        // Check for individual existence
+        if (!isNumber(fields[0])) {
+            cout << "Removed invalid patient ID: " << line << endl;
+            removed++;
+            continue;
+        }
+
+        
+        if (fields[1].empty()) {
+            cout << "Removed missing description: " << line << endl;
+            removed++;
+            continue;
+        }
+
+        
+        if (!isNumber(fields[2])) {
+            cout << "Removed invalid cost: " << line << endl;
+            removed++;
+            continue;
+        }
+
+        
+        if (fields[3] != "true" && fields[3] != "false") {
+            cout << "Removed invalid paid status: " << line << endl;
+            removed++;
+            continue;
+        }
+
+        
+        tempFile << line << endl;
+    }
+
+    inFile.close();
+    tempFile.close();
+
+    remove("treatments.txt");
+    rename("treatments_temp.txt", "treatments.txt");
+
+    cout << "Treatments file cleaned. Records removed: " << removed << endl;
+}
+
+// duplicate function for cleaning of patients file
+
+void removeDuplicateIDs(){
+    ifstream inFile("patients.txt");
+
+    int total = countLines("patients.txt");
+
+    int ids[500];
+    int idCount = 0;
+    int duplicateIDs[500];
+    int dupCount = 0;
+
+    string line;
+    while (getline(inFile, line)){
+        
+    }
+}
+
             cout << "Invalid Time\n";
         }
     }
@@ -318,6 +557,7 @@ public:
     }
 };
 
+ main
 
 
 // LOAD FUNCTIONS (Loading of files)
@@ -400,6 +640,65 @@ Patient* loadPatients(int& total) {
     cout << "Loaded " << total << " patients.\n";
     return patients;
 }
+ momin/doctor-treatment
+
+Appointment* loadAppointments(int& total) {
+    total = countLines("appointments.txt");
+    if (total == 0) { cout << "No appointments found.\n"; return NULL; }
+
+    Appointment* appointments = new Appointment[total];
+    ifstream file("appointments.txt");
+    string line; int i = 0;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        string parts[10];
+        int count = splitLine(line, parts, 10);
+        if (count < 4) continue;
+
+        appointments[i].setPatientId(toInt(trim(parts[0])));
+        appointments[i].setDoctorId(toInt(trim(parts[1])));
+        appointments[i].setDate(trim(parts[2]));
+        appointments[i].setTime(trim(parts[3]));
+        i++;
+    }
+    file.close();
+    total = i;
+    cout << "Loaded " << total << " appointments.\n";
+    return appointments;
+}
+
+Treatment* loadTreatments(int& total) {
+    total = countLines("treatments.txt");
+    if (total == 0) { cout << "No treatments found.\n"; return NULL; }
+
+    Treatment* treatments = new Treatment[total];
+    ifstream file("treatments.txt");
+    string line; int i = 0;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        string parts[10];
+        int count = splitLine(line, parts, 10);
+        if (count < 4) continue;
+
+        treatments[i].set_patientID(toInt(trim(parts[0])));
+        treatments[i].set_description(trim(parts[1]));
+        treatments[i].set_cost(toDouble(trim(parts[2])));
+        treatments[i].set_paid(trim(parts[3]) == "true");
+        i++;
+    }
+    file.close();
+    total = i;
+    cout << "Loaded " << total << " treatments.\n";
+    return treatments;
+}
+
+
+
+
+
+ main
 
 Appointment* loadAppointments(int& total) {
     total = countLines("appointments.txt");
