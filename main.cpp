@@ -20,7 +20,7 @@ bool isNumber(string s){
 
 // Splits a line by '#' delimiter and stores each part in the parts[] array
 // Returns the number of parts found
-// Example: "101#Ali Raza#25#Male" → parts[0]="101", parts[1]="Ali Raza", etc.
+// Example: "101#Ali Raza#25#Male" to parts[0]="101", parts[1]="Ali Raza", etc.
 int splitLine(string line, string parts[], int maxParts) {
     int count = 0;
     string current = "";
@@ -200,6 +200,8 @@ public:
         cout << "Patient ID  : " << patientID   << endl;
         cout << "Description : " << description << endl;
         cout << "Cost : " << cost        << endl;
+
+        //we use ternary operator
         cout << "Paid : " << (paid ? "Yes" : "No") << endl;
         cout << "------------------------" << endl;
     }
@@ -249,8 +251,12 @@ public:
         else cout << "Invalid Age" << endl;
     }
     void setGender(string g) {
-        if (g == "Male" || g == "Female") gender = g;
-        else cout << "Invalid Gender (use Male or Female)" << endl;
+        if (g == "Male" || g == "Female") {
+            gender = g;
+        }
+        else {
+            cout << "Invalid Gender (use Male or Female)" << endl;
+        }
     }
     void setContact(string c) {
         if (c.length() == 11) {
@@ -290,13 +296,13 @@ public:
     }
 
     void display() const {
-        cout << "Patient ID : " << patientId << "\n";
-        cout << "Name : " << name<< "\n";
-        cout << "Age : " << age << "\n";
-        cout << "Gender : " << gender<< "\n";
-        cout << "Contact : " << contact << "\n";
-        cout << "Balance : " << balance << "\n";
-        cout << "------------------------\n";
+        cout << "Patient ID : " << patientId << endl;
+        cout << "Name : " << name<< endl;
+        cout << "Age : " << age << endl;
+        cout << "Gender : " << gender<< endl;
+        cout << "Contact : " << contact << endl;
+        cout << "Balance : " << balance << endl;
+        cout << "------------------------"<<endl;
     }
 };
 
@@ -347,17 +353,25 @@ public:
         }
     }
 
-    int    getPatientId() const { return patientId;    }
-    int    getDoctorId()  const { return doctorId;     }
-    string getDate()      const { return string(date); }
-    string getTime()      const { return string(time); }
+    int getPatientId() const { 
+        return patientId;    
+    }
+    int getDoctorId()  const { 
+        return doctorId;     
+    }
+    string getDate() const { 
+        return string(date); 
+    }
+    string getTime() const { 
+        return string(time); 
+    }
 
     void display() const {
-        cout << "Patient ID : " << patientId << "\n";
-        cout << "Doctor ID  : " << doctorId  << "\n";
-        cout << "Date       : " << date      << "\n";
-        cout << "Time       : " << time      << "\n";
-        cout << "------------------------\n";
+        cout << "Patient ID : " << patientId << endl;
+        cout << "Doctor ID  : " << doctorId  << endl;
+        cout << "Date       : " << date      << endl;
+        cout << "Time       : " << time      << endl;
+        cout << "------------------------"<<endl;
     }
 };
 
@@ -584,7 +598,7 @@ void removeDuplicateIDs() {
 }
 
 void cleanPatientsFile() {
-    // Step 1: Remove duplicates first
+    //removing duplicatess
     removeDuplicateIDs();
 
     ifstream inFile("data/patients.txt");
@@ -603,7 +617,7 @@ void cleanPatientsFile() {
             fields[i] = trim(fields[i]);
         }
 
-        // Check all 6 fields exist
+        // check fir 6 fields
         if(!isValidRecord(fields, count, 6)){
             cout << "Removed incomplete patient record: " << line << endl;
             removed++;
@@ -616,28 +630,27 @@ void cleanPatientsFile() {
             continue;
         }
 
-        // Check age is a number
+    
         if (!isNumber(fields[2])) {
             cout << "Removed invalid age: " << line << endl;
             removed++;
             continue;
         }
 
-        // Fix gender M→Male, F→Female
+    
         if (fields[3] == "M") {
             fields[3] = "Male";
         } else if (fields[3] == "F") {
             fields[3] = "Female";
         }
 
-        // Check contact is not empty
         if (fields[4].empty()) {
             cout << "Removed missing contact: " << line << endl;
             removed++;
             continue;
         }
 
-        // Check phone has no alphabets
+        // check phone has no alphabets
         bool validPhone = true;
         for (int i = 0; i < fields[4].length(); i++) {
             if (!isdigit(fields[4][i])) {
@@ -651,20 +664,15 @@ void cleanPatientsFile() {
             continue;
         }
 
-        // Check phone has exactly 11 digits
+        // check phone has exactly 11 digits
         if (fields[4].length() != 11) {
             cout << "Removed incomplete phone number: " << line << endl;
             removed++;
             continue;
         }
 
-        // Valid record — write to temp file with fixed gender
-        tempFile << fields[0] << "#"
-                 << fields[1] << "#"
-                 << fields[2] << "#"
-                 << fields[3] << "#"
-                 << fields[4] << "#"
-                 << fields[5] << endl;
+        // write to temp file with fixed gender
+        tempFile << fields[0] << "#" << fields[1] << "#"<< fields[2] << "#" << fields[3] << "#"<< fields[4] << "#" << fields[5] << endl;
     }
 
     inFile.close();
@@ -677,8 +685,8 @@ void cleanPatientsFile() {
 }
 
 string fixDate(string date) {
-    // Check if date is in YYYY-MM-DD format (starts with 4 digit year)
-    // Example: 2026-04-24 → 04-24-2026
+    // Check if date is in YYYY-MM-DD format starts with 4 digit year
+    // 2026-04-24 to 04-24-2026
     if (date.length() == 10 && date[4] == '-') {
         string year  = date.substr(0, 4);
         string month = date.substr(5, 2);
@@ -699,10 +707,8 @@ string fixTime(string time) {
     }
 
     if (hasAMPM) {
-        return time; // already correct
+        return time;
     }
-
-    // Extract hour and minutes
     string hourStr = "";
     string minStr  = "";
     bool colonFound = false;
@@ -809,10 +815,7 @@ void cleanAppointmentsFile() {
             fixed++;
         }
 
-        tempFile << fields[0] << "#"
-                 << fields[1] << "#"
-                 << fixedDate  << "#"
-                 << fixedTime  << endl;
+        tempFile << fields[0] << "#"<< fields[1] << "#" << fixedDate  << "#" << fixedTime  << endl;
     }
 
     inFile.close();
@@ -936,7 +939,10 @@ Doctor* loadDoctors(int &count) {
 
 Patient* loadPatients(int& total) {
     total = countLines("data/patients.txt");
-    if (total == 0) { cout << "No patients found.\n"; return NULL; }
+    if (total == 0) { 
+        cout << "No patients found."<<endl;
+        return NULL; 
+    }
 
     Patient* patients = new Patient[total];
     ifstream file("data/patients.txt");
@@ -958,14 +964,16 @@ Patient* loadPatients(int& total) {
     }
     file.close();
     total = i;
-    cout << "Loaded " << total << " patients.\n";
+    cout << "Loaded " << total << " patients."<<endl;
     return patients;
 }
 
 Appointment* loadAppointments(int& total) {
     total = countLines("data/appointments.txt");
-    if (total == 0) { cout << "No appointments found.\n"; return NULL; }
-
+    if (total == 0) { 
+        cout << "No appointments found."<<endl;
+        return NULL;
+    }
     Appointment* appointments = new Appointment[total];
     ifstream file("data/appointments.txt");
     string line; int i = 0;
@@ -984,23 +992,31 @@ Appointment* loadAppointments(int& total) {
     }
     file.close();
     total = i;
-    cout << "Loaded " << total << " appointments.\n";
+    cout << "Loaded " << total << " appointments."<<endl;
     return appointments;
 }
 
 Treatment* loadTreatments(int& total) {
     total = countLines("data/treatments.txt");
-    if (total == 0) { cout << "No treatments found.\n"; return NULL; }
+    if (total == 0) { 
+        cout << "No treatments found."<<endl; 
+        return NULL;
+    }
+   
 
     Treatment* treatments = new Treatment[total];
     ifstream file("data/treatments.txt");
     string line; int i = 0;
 
     while (getline(file, line)) {
-        if (line.empty()) continue;
+        if (line.empty()) {
+            continue;
+        }
         string parts[10];
         int count = splitLine(line, parts, 10);
-        if (count < 4) continue;
+        if (count < 4) {
+            continue;
+        }
 
         treatments[i].set_patientID(toInt(trim(parts[0])));
         treatments[i].set_description(trim(parts[1]));
@@ -1010,7 +1026,7 @@ Treatment* loadTreatments(int& total) {
     }
     file.close();
     total = i;
-    cout << "Loaded " << total << " treatments.\n";
+    cout << "Loaded " << total << " treatments."<<endl;
     return treatments;
 }
 
@@ -1021,12 +1037,7 @@ Treatment* loadTreatments(int& total) {
 void savePatientsToFile(Patient* patients, int total) {
     ofstream file("data/patients.txt");
     for (int i = 0; i < total; i++) {
-        file << patients[i].getPatientId() << "#"
-             << patients[i].getName()      << "#"
-             << patients[i].getAge()       << "#"
-             << patients[i].getGender()    << "#"
-             << patients[i].getContact()   << "#"
-             << patients[i].getBalance()   << "\n";
+        file << patients[i].getPatientId() << "#"<< patients[i].getName()<< "#"<< patients[i].getAge() << "#"<< patients[i].getGender()<< "#" << patients[i].getContact() << "#"<< patients[i].getBalance()<< endl;
     }
     file.close();
 }
@@ -1037,7 +1048,7 @@ void addPatient(Patient* &patients, int &total)
     string name, gender, contact;
     double balance;
 
-    cout << "Add New Patient\n";
+    cout << "Add New Patient"<<endl;
     cout << "Enter Patient ID          : ";
     cin >> id;
     cin.ignore();
@@ -1076,7 +1087,7 @@ void addPatient(Patient* &patients, int &total)
          << gender << "#" << contact << "#" << balance << endl;
     file.close();
 
-    cout << "Patient added successfully.\n";
+    cout << "Patient added successfully."<<endl;
 }
 
 void updatePatient(Patient* patients, int total) {
@@ -1127,16 +1138,11 @@ void updatePatient(Patient* patients, int total) {
     // rewrite entire file with updated data
     ofstream file("data/patients.txt");
     for (int i = 0; i < total; i++) {
-        file << patients[i].getPatientId() << "#"
-             << patients[i].getName()      << "#"
-             << patients[i].getAge()       << "#"
-             << patients[i].getGender()    << "#"
-             << patients[i].getContact()   << "#"
-             << patients[i].getBalance()   << "\n";
+        file << patients[i].getPatientId() << "#"<< patients[i].getName() << "#"<< patients[i].getAge() << "#"<< patients[i].getGender() << "#"<< patients[i].getContact() << "#"<< patients[i].getBalance()   << endl;
     }
     file.close();
 
-    cout << "Patient updated successfully.\n";
+    cout << "Patient updated successfully."<<endl;
 }
 
 void deletePatient(Patient* &patients, int &total) {
@@ -1153,7 +1159,7 @@ void deletePatient(Patient* &patients, int &total) {
     }
 
     if (found == -1) {
-        cout << "Patient not found.\n";
+        cout << "Patient not found."<<endl;
         return;
     }
 
@@ -1161,7 +1167,7 @@ void deletePatient(Patient* &patients, int &total) {
     Patient* newArr = new Patient[total - 1];
     int j = 0;
     for (int i = 0; i < total; i++) {
-        if (i == found) continue; // skip the deleted one
+        if (i == found) continue; // skiping deleted ones
         newArr[j++] = patients[i];
     }
 
@@ -1172,22 +1178,17 @@ void deletePatient(Patient* &patients, int &total) {
     // rewrite file without deleted patient
     ofstream file("data/patients.txt");
     for (int i = 0; i < total; i++) {
-        file << patients[i].getPatientId() << "#"
-             << patients[i].getName()      << "#"
-             << patients[i].getAge()       << "#"
-             << patients[i].getGender()    << "#"
-             << patients[i].getContact()   << "#"
-             << patients[i].getBalance()   << "\n";
+        file << patients[i].getPatientId() << "#"<< patients[i].getName()<< "#"<< patients[i].getAge() << "#"<< patients[i].getGender()<< "#"<< patients[i].getContact()<< "#" << patients[i].getBalance()   << endl;
     }
     file.close();
 
-    cout << "Patient deleted successfully.\n";
+    cout << "Patient deleted successfully."<<endl;
 }
 
 void viewPatients(Patient* patients, int total) {
     cout << "\n--- All Patients ---\n";
     if (total == 0) {
-        cout << "No patients found.\n";
+        cout << "No patients found."<<endl;
         return;
     }
     for (int i = 0; i < total; i++)
@@ -1206,7 +1207,7 @@ void scheduleAppointment(Appointment* &appointments, int &total, Patient* patien
     cout << "\n--- Schedule Appointment ---\n";
     cout << "Enter Patient ID           : ";
     cin >> pid;
-    cout << "Enter Doctor ID            : ";
+    cout << "Enter Doctor ID  : ";
     cin >> did;
     cin.ignore();
     cout << "Enter Date (MM-DD-YYYY)    : ";
@@ -1228,16 +1229,15 @@ void scheduleAppointment(Appointment* &appointments, int &total, Patient* patien
     }
 
     if (found == -1) {
-        cout << "Patient not found.\n";
+        cout << "Patient not found."<<endl;
         return;
     }
 
     // check balance
     if (patients[found].getBalance() < cost)
     {
-        cout << "Insufficient balance. Appointment denied.\n";
-        cout << "Balance: " << patients[found].getBalance()
-             << " | Cost: " << cost << "\n";
+        cout << "Insufficient balance. Appointment denied."<<endl;
+        cout << "Balance: " << patients[found].getBalance()<< " | Cost: " << cost << endl;
         return;
     }
 
@@ -1246,9 +1246,9 @@ void scheduleAppointment(Appointment* &appointments, int &total, Patient* patien
 
     // add to appointments array
     Appointment* newArr = new Appointment[total + 1];
-    for (int i = 0; i < total; i++)
+    for (int i = 0; i < total; i++){
         newArr[i] = appointments[i];
-
+    }
     newArr[total].setPatientId(pid);
     newArr[total].setDoctorId(did);
     newArr[total].setDate(date);
@@ -1260,11 +1260,11 @@ void scheduleAppointment(Appointment* &appointments, int &total, Patient* patien
 
     // save appointment to file
     ofstream file("data/appointments.txt", ios::app);
-    file << pid << "#" << did << "#" << date << "#" << timeSlot << "\n";
+    file << pid << "#" << did << "#" << date << "#" << timeSlot << endl;
     file.close();
 
-    cout << "Appointment scheduled successfully.\n";
-    cout << "Remaining balance: " << patients[found].getBalance() << "\n";
+    cout << "Appointment scheduled successfully."<<endl;
+    cout << "Remaining balance: " << patients[found].getBalance() << endl;
 
     // save updated patient balance to file
     savePatientsToFile(patients, patientCount);
@@ -1285,11 +1285,11 @@ void cancelAppointment(Appointment* &appointments, int &total) {
     }
 
     if (found == -1) {
-        cout << "Appointment not found.\n";
+        cout << "Appointment not found."<<endl;
         return;
     }
 
-    cout << "Cancelling:\n";
+    cout << "Cancelling:"<<endl;
     appointments[found].display();
 
     // make smaller array without that appointment
@@ -1304,23 +1304,20 @@ void cancelAppointment(Appointment* &appointments, int &total) {
     appointments = newArr;
     total--;
 
-    // rewrite file
+    // rewrite too file
     ofstream file("data/appointments.txt");
     for (int i = 0; i < total; i++) {
-        file << appointments[i].getPatientId() << "#"
-             << appointments[i].getDoctorId()  << "#"
-             << appointments[i].getDate()      << "#"
-             << appointments[i].getTime()      << "\n";
+        file << appointments[i].getPatientId() << "#" << appointments[i].getDoctorId() << "#"<< appointments[i].getDate() << "#"<< appointments[i].getTime() << endl;
     }
     file.close();
 
-    cout << "Appointment cancelled successfully.\n";
+    cout << "Appointment cancelled successfully."<<endl;
 }
 
 void viewAppointments(Appointment* appointments, int total) {
     cout << "\n--- All Appointments ---\n";
     if (total == 0) {
-        cout << "No appointments found.\n";
+        cout << "No appointments found"<<endl;
         return;
     }
     for (int i = 0; i < total; i++)
@@ -1347,14 +1344,15 @@ void searchPatientsByID(Patient* patients, int total) {
     }
 
     if (!found)
-        cout << "No patient found with ID " << id << "\n";
+        cout << "No patient found with ID " << id << endl;
 }
 
 void searchPatientsByName(Patient* patients, int total) {
     string name;
     cout << "\n--- Search Patient by Name ---\n";
     cin.ignore();
-    cout << "Enter Name: "; getline(cin, name);
+    cout << "Enter Name: ";
+    getline(cin, name);
 
     bool found = false;
     for (int i = 0; i < total; i++) {
@@ -1365,7 +1363,7 @@ void searchPatientsByName(Patient* patients, int total) {
     }
 
     if (!found)
-        cout << "No patient found with name " << name << "\n";
+        cout << "No patient found with name " << name << endl;
 }
 
 void searchDoctorBySpecialty(Doctor* doctors, int total) {
@@ -1401,19 +1399,23 @@ void addDoctor(Doctor* &doctors, int &total) {
     string name, specialty;
 
     cout << "\n--- Add New Doctor ---\n";
-    cout << "Enter Doctor ID      : "; cin >> id;
+    cout << "Enter Doctor ID      : ";
+    cin >> id;
     cin.ignore();
-    cout << "Enter Name : "; getline(cin, name);
-    cout << "Enter Specialty : "; getline(cin, specialty);
-    cout << "Enter Experience (years): "; cin >> experience;
+    cout << "Enter Name : ";
+    getline(cin, name);
+    cout << "Enter Specialty : ";
+    getline(cin, specialty);
+    cout << "Enter Experience (years): ";
+    cin >> experience;
 
     
     Doctor* newArr = new Doctor[total + 1];
 
    
-    for (int i = 0; i < total; i++)
+    for (int i = 0; i < total; i++){
         newArr[i] = doctors[i];
-
+    }
     
     newArr[total].set_doctorID(id);
     newArr[total].set_doctorName(name);
@@ -1445,20 +1447,23 @@ void updateDoctor(Doctor* doctors, int total) {
     }
 
     if (found == -1) {
-        cout << "Doctor not found.\n";
+        cout << "Doctor not found."<<endl;
         return;
     }
 
-    cout << "Current details:\n";
+    cout << "Current details:"<<endl;
     doctors[found].display();
 
     string name, specialty;
     int experience;
 
     cin.ignore();
-    cout << "Enter new Name : "; getline(cin, name);
-    cout << "Enter new Specialty : "; getline(cin, specialty);
-    cout << "Enter new Experience : "; cin >> experience;
+    cout << "Enter new Name : ";
+    getline(cin, name);
+    cout << "Enter new Specialty : ";
+    getline(cin, specialty);
+    cout << "Enter new Experience : ";
+    cin >> experience;
 
     doctors[found].set_doctorName(name);
     doctors[found].set_doctorSpecialty(specialty);
@@ -1526,28 +1531,30 @@ void sortDoctorsByExperience(Doctor* doctors, int total) {
             }
         }
     }
-    cout << "\n--- Doctors Sorted by Experience ---\n";
+    cout<<endl;
+    cout << "--- Doctors Sorted by Experience ---"<<endl;
     for (int i = 0; i < total; i++)
         doctors[i].display();
 }
 
 void viewTreatmentsByDoctor(Doctor* doctors, int docTotal, Appointment* appointments, int appTotal, Treatment* treatments, int treatTotal) {
     int id;
-    cout << "\n--- View Treatments by Doctor ---\n";
+    cout<<endl;
+    cout << "--- View Treatments by Doctor ---"<<endl;
     cout << "Enter Doctor ID: "; cin >> id;
 
     
-    bool docFound = false;
+    bool doc_Found = false;
     for (int i = 0; i < docTotal; i++) {
         if (doctors[i].get_doctorID() == id) {
-            cout << "Doctor: " << doctors[i].get_doctorName() << "\n";
-            docFound = true;
+            cout << "Doctor: " << doctors[i].get_doctorName() << endl;
+            doc_Found = true;
             break;
         }
     }
 
-    if (!docFound) {
-        cout << "Doctor not found.\n";
+    if (!doc_Found) {
+        cout << "Doctor not found."<<endl;
         return;
     }
 
@@ -1624,7 +1631,8 @@ void viewTreatments(Treatment* treatments, int total) {
 
 void updatePayment(Treatment* treatments, int treatTotal) {
     int id;
-    cout << "\n--- Update Payment Status ---\n";
+    cout<<endl;
+    cout << "--- Update Payment Status ---"<<endl;
     cout << "Enter Patient ID: "; cin >> id;
 
     // find treatment for this patient
@@ -1638,7 +1646,7 @@ void updatePayment(Treatment* treatments, int treatTotal) {
     }
 
     if (!found) {
-        cout << "No treatment found for Patient ID " << id << "\n";
+        cout << "No treatment found for Patient ID " << id << endl;
         return;
     }
 
@@ -1693,22 +1701,29 @@ void generateBill(Treatment* treatments, int treatTotal,
     }
 
     cout<<endl;
-    cout << "========== BILL =========="<<endl;
+    cout << "========== BILL ========"<<endl;
     cout << "Patient ID: " << id << endl;
     cout << "Patient Name: " << patientName << endl;
     cout << "--------------------------"<<endl;
 
     double totalCost = 0;
     bool found = false;
+    string status;
 
     for (int i = 0; i < treatTotal; i++) {
         if (treatments[i].get_patientID() == id) {
             cout << "Treatment: " << treatments[i].get_description() << endl;
             cout << "Cost: " << treatments[i].get_cost() << endl;
-            cout << "Status: " << (treatments[i].isPaid() ? "Paid" : "Unpaid") << endl;
-            cout << "--------------------------\n";
-            totalCost += treatments[i].get_cost();
-            found = true;
+            
+        if (treatments[i].isPaid()) {
+            status = "Paid";
+        } else {
+            status = "Unpaid";
+        }
+        cout << "Status: " << status << endl;
+        cout << "--------------------------"<<endl;
+        totalCost += treatments[i].get_cost();
+        found = true;
         }
     }
 
@@ -1770,5 +1785,191 @@ void searchDoctorByID(Doctor* doctors, int total) {
 }
 
 int main(){
+    if (!login()) return 0;
+
+    cleanFile();
+
+    int docTotal = 0, treatTotal = 0, patTotal = 0, appTotal = 0;
+
+    Doctor* doctors = loadDoctors(docTotal);
+    Treatment* treatments  = loadTreatments(treatTotal);
+    Patient* patients = loadPatients(patTotal);
+    Appointment* appointments = loadAppointments(appTotal);
+
+    int choice = 0;
+    while (choice != 6) {
+        cout<<endl;
+        cout << "=========================================" << endl;
+        cout << "        HOSPITAL MANAGEMENT SYSTEM       " << endl;
+        cout << "=========================================" << endl;
+        cout << "1. Patient Management"     << endl;
+        cout << "2. Doctor Management"      << endl;
+        cout << "3. Appointment Management" << endl;
+        cout << "4. Treatment & Billing"    << endl;
+        cout << "5. Search / Reports"       << endl;
+        cout << "6. Exit"                   << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            int subChoice;
+            cout<<endl;
+            cout << "--- Patient Management ---"<<endl;
+            cout << "1. Add Patient"<<endl;
+            cout << "2. Update Patient"<<endl;
+            cout << "3. Delete Patient"<<endl;
+            cout << "4. View All Patients"<<endl;
+            cout << "Enter choice: ";
+            cin >> subChoice;
+
+            if      (subChoice == 1) {
+                addPatient(patients, patTotal);
+            }
+            else if (subChoice == 2) {
+                updatePatient(patients, patTotal);
+            }
+            else if (subChoice == 3) {
+                deletePatient(patients, patTotal);
+            }
+            else if (subChoice == 4) {
+                viewPatients(patients, patTotal);
+            }
+            else {
+                cout << "Invalid choice."<<endl;
+            }
+
+        } else if (choice == 2) {
+            int subChoice;
+            cout<<endl;
+            cout << "--- Doctor Management ---"<<endl;
+            cout << "1. Add Doctor"<<endl;
+            cout << "2. Update Doctor"<<endl;
+            cout << "3. Delete Doctor"<<endl;
+            cout << "4. View All Doctors"<<endl;
+            cout << "5. Sort Doctors by Experience"<<endl;
+            cout << "Enter choice: ";
+            cin >> subChoice;
+
+            if (subChoice == 1) {
+                addDoctor(doctors, docTotal);
+            }
+            else if (subChoice == 2) {
+                updateDoctor(doctors, docTotal);
+            }
+            else if (subChoice == 3) {
+                deleteDoctor(doctors, docTotal);
+            }
+            else if (subChoice == 4) {
+                viewDoctors(doctors, docTotal);
+            }
+            else if (subChoice == 5) {
+                sortDoctorsByExperience(doctors, docTotal);
+            }
+            else {
+                cout << "Invalid choice."<<endl;
+            }
+
+        } else if (choice == 3) {
+            int subChoice;
+            cout<<endl;
+            cout << "--- Appointment Management ---"<<endl;
+            cout << "1. Schedule Appointment"<<endl;
+            cout << "2. Cancel Appointment"<<endl;
+            cout << "3. View All Appointments"<<endl;
+            cout << "Enter choice: ";
+            cin >> subChoice;
+
+            if (subChoice == 1) {
+                scheduleAppointment(appointments, appTotal, patients, patTotal);
+            }
+            else if (subChoice == 2) {
+                cancelAppointment(appointments, appTotal);
+            }
+            else if (subChoice == 3) {
+                viewAppointments(appointments, appTotal);
+            }
+            else {
+                cout << "Invalid choice"<<endl;
+            }
+
+        } else if (choice == 4) {
+            int subChoice;
+            cout<<endl;
+            cout << " --- Treatment & Billing ---"<<endl;
+            cout << "1. Add Treatment"<<endl;
+            cout << "2. View Treatments"<<endl;
+            cout << "3. Update Payment Status"<<endl;
+            cout << "4. Generate Bill"<<endl;
+            cout << "5. View Treatments by Doctor"<<endl;
+            cout << "Enter choice: ";
+            cin >> subChoice;
+
+            if (subChoice == 1) {
+                addTreatment(treatments, treatTotal);
+            }
+            else if (subChoice == 2) {
+                viewTreatments(treatments, treatTotal);
+            }
+            else if (subChoice == 3) {
+                updatePayment(treatments, treatTotal);
+            }
+            else if (subChoice == 4) {
+                generateBill(treatments, treatTotal, patients, patTotal);
+            }
+            else if (subChoice == 5) {
+                viewTreatmentsByDoctor(doctors, docTotal, appointments, appTotal, treatments, treatTotal);
+            }
+            else {
+                cout << "Invalid choice."<<endl;
+            }
+
+        } else if (choice == 5) {
+            int subChoice;
+            cout<<endl;
+            cout << "--- Search / Reports ---"<<endl;
+            cout << "1. Search Patient by ID"<<endl;
+            cout << "2. Search Patient by Name"<<endl;
+            cout << "3. Search Doctor by ID"<<endl;
+            cout << "4. Search Doctor by Specialty"<<endl;
+            cout << "5. View Treatments by Doctor"<<endl;
+            cout << "6. Sort Doctors by Experience"<<endl;
+            cout << "Enter choice: ";
+            cin >> subChoice;
+
+            if (subChoice == 1) {
+                searchPatientsByID(patients, patTotal);
+            }
+            else if (subChoice == 2) {
+                searchPatientsByName(patients, patTotal);
+            }
+            else if (subChoice == 3) {
+                searchDoctorByID(doctors, docTotal);
+            }
+            else if (subChoice == 4) {
+                searchDoctorBySpecialty(doctors, docTotal);
+            }
+            else if (subChoice == 5) {
+                viewTreatmentsByDoctor(doctors, docTotal, appointments, appTotal, treatments, treatTotal);
+            }
+            else if (subChoice == 6) {
+                sortDoctorsByExperience(doctors, docTotal);
+            }
+            else {
+                cout << "Invalid choice."<<endl;
+            }
+
+        } else if (choice == 6) {
+            cout << "Exiting... Goodbye!"<<endl;
+        } else {
+            cout << "Invalid choice. Try again."<<endl;
+        }
+    }
+
+    
+    delete[] doctors;
+    delete[] treatments;
+    delete[] patients;
+    delete[] appointments;
+
     return 0;
 }
